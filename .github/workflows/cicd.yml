@@ -48,5 +48,6 @@ jobs:
             docker run -d --name ${{ env.IMAGE_NAME }} \
               --network side-network \
               -p 8000:8000 \
-              --env-file .env \
+              -e OLLAMA_API_URL=${{ secrets.OLLAMA_API_URL }} \
+              -e OLLAMA_MODEL_NAME=${{ secrets.OLLAMA_MODEL_NAME }} \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
