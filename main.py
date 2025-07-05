@@ -13,7 +13,11 @@ app = FastAPI()
 OLLAMA_API_URL = os.getenv("OLLAMA_API_URL")
 OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
 
-class Persona(BaseModel):
+class Message(BaseModel):
+    role: str  # "system", "user", "assistant"
+    content: str
+
+class ChatRequest(BaseModel):
     personaName: str          # 이름
     personaAge: int           # 나이
     personaGender: str        # 성별
@@ -21,29 +25,22 @@ class Persona(BaseModel):
     personaHistory: str       # 과거력(가족력)
     personaPersonality: str   # 성향성격
     personaDisease: str       # 병명
-
-class Message(BaseModel):
-    role: str  # "system", "user", "assistant"
-    content: str
-
-class ChatRequest(BaseModel):
-    persona: Persona
     messages: List[Message]
 
 class ChatResponse(BaseModel):
     answer: str
 
-def build_prompt(persona: Persona, messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def build_prompt(persona: Dict[str, any], messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
     system_content = (
         f"너는 가상의 인물 역할을 맡았다.\n"
         f"이 인물의 정보는 다음과 같다:\n"
-        f"- 이름: {persona.personaName}\n"
-        f"- 나이: {persona.personaAge}세\n"
-        f"- 성별: {persona.personaGender}\n"
-        f"- 주요 증상: {persona.personaSymptom}\n"
-        f"- 과거력 및 가족력: {persona.personaHistory}\n"
-        f"- 성격: {persona.personaPersonality}\n"
-        f"- 병명: {persona.personaDisease}\n\n"
+        f"- 이름: {persona['personaName']}\n"
+        f"- 나이: {persona['personaAge']}세\n"
+        f"- 성별: {persona['personaGender']}\n"
+        f"- 주요 증상: {persona['personaSymptom']}\n"
+        f"- 과거력 및 가족력: {persona['personaHistory']}\n"
+        f"- 성격: {persona['personaPersonality']}\n"
+        f"- 병명: {persona['personaDisease']}\n\n"
         "너는 이 인물의 페르소나를 유지하며, "
         "질문에 대해 자연스럽고 사실적인 말투로 답변해야 한다. "
         "설정한 페르소나 정보를 바탕으로 자연스럽고 현실적인 말투로 대답하라. "
@@ -65,7 +62,16 @@ def build_prompt(persona: Persona, messages: List[Dict[str, str]]) -> List[Dict[
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    prompt = build_prompt(req.persona, [msg.dict() for msg in req.messages])
+    persona_dict = {
+        "personaName": req.personaName,
+        "personaAge": req.personaAge,
+        "personaGender": req.personaGender,
+        "personaSymptom": req.personaSymptom,
+        "personaHistory": req.personaHistory,
+        "personaPersonality": req.personaPersonality,
+        "personaDisease": req.personaDisease,
+    }
+    prompt = build_prompt(persona_dict, [msg.dict() for msg in req.messages])
     payload = {
         "model": OLLAMA_MODEL_NAME,
         "messages": prompt,
