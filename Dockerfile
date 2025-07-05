@@ -6,7 +6,7 @@ RUN apk add --no-cache gcc musl-dev libffi-dev python3-dev build-base
 
 COPY requirements.txt .
 
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel cython
 
 RUN pip install --no-cache-dir -r requirements.txt
 
