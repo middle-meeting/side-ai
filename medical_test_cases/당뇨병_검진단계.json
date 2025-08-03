@@ -1,0 +1,15 @@
+{
+  "personaName": "박성호",
+  "personaAge": 54,
+  "personaGender": "남성",
+  "personaSymptom": "최근 갈증이 심하고 소변을 자주 보며 체중이 줄었음",
+  "personaHistory": "고혈압 3년, 아버지 당뇨병 가족력",
+  "personaPersonality": "성실하지만 건강에 무관심한 편, 간단명료하게 말하는 성격",
+  "personaDisease": "제2형 당뇨병",
+  "messages": [
+    {
+      "role": "user",
+      "content": "피로감이나 시야 흐림은 없으셨나요? 상처가 잘 낫지 않는 경험은 있으신가요?"
+    }
+  ]
+}
